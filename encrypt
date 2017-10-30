@@ -1,0 +1,134 @@
+
+
+
+
+public class RSAUtil {
+
+
+  public static KeyPair getKeyPair() {
+    KeyPairGenerator keyPairGenerator;
+    try {
+      keyPairGenerator = KeyPairGenerator.getInstance(EncryptType.RSA.toString());
+    } catch (NoSuchAlgorithmException e) {
+      throw new RuntimeException("KeyPair");
+    }
+    keyPairGenerator.initialize(512);
+    KeyPair keyPair = keyPairGenerator.generateKeyPair();
+
+    return keyPair;
+  }
+
+  public static String getPublicKey(KeyPair keyPair) {
+    PublicKey publicKey = keyPair.getPublic();
+
+    byte[] bytes = publicKey.getEncoded();
+
+    return Base64Util.encodeBase64String(bytes);
+  }
+
+  public static String getPrivateKey(KeyPair keyPair) {
+    PrivateKey privateKey = keyPair.getPrivate();
+    byte[] bytes = privateKey.getEncoded();
+    return Base64Util.encodeBase64String(bytes);
+  }
+
+  public static PublicKey string2PublicKey(String pubStr)
+   throws Exception {
+    byte[] keyBytes = Base64Util.decodeBase64(pubStr);
+    X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
+    KeyFactory keyFactory = KeyFactory.getInstance(EncryptType.RSA.toString());
+    PublicKey publicKey = keyFactory.generatePublic(keySpec);
+    return publicKey;
+  }
+  public static PrivateKey string2PrivateKey(String priStr)
+   throws Exception {
+    byte[] keyBytes = Base64Util.decodeBase64(priStr);
+    PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
+    KeyFactory keyFactory = KeyFactory.getInstance(EncryptType.RSA.toString());
+    PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
+    return privateKey;
+  }
+
+  public static byte[] encryptBytes(byte[] src, Key key) {
+    try {
+      Cipher cipher = Cipher.getInstance(EncryptType.RSA.toString());
+      cipher.init(Cipher.ENCRYPT_MODE, key);
+      return cipher.doFinal(src);
+    } catch (Exception e) {
+      throw new RuntimeException("RSA");
+    }
+  }
+
+  public static byte[] encryptBytes(String src, Key key) {
+    try {
+      Cipher cipher = Cipher.getInstance(EncryptType.RSA.toString());
+      cipher.init(Cipher.ENCRYPT_MODE, key);
+      return cipher.doFinal(src.getBytes("utf8"));
+    } catch (Exception e) {
+      throw new RuntimeException("RSA");
+    }
+  }
+
+
+  public static String encryptBase64String(byte[] src, Key key) {
+    try {
+      Cipher cipher = Cipher.getInstance(EncryptType.RSA.toString());
+      cipher.init(Cipher.ENCRYPT_MODE, key);
+      return Base64Util.encodeBase64String(cipher.doFinal(src));
+    } catch (Exception e) {
+      throw new RuntimeException("RSA");
+    }
+  }
+
+  public static String encryptBase64String(String src, Key key) {
+    try {
+      Cipher cipher = Cipher.getInstance(EncryptType.RSA.toString());
+      cipher.init(Cipher.ENCRYPT_MODE, key);
+      return Base64Util.encodeBase64String(cipher.doFinal(src.getBytes("utf8")));
+    } catch (Exception e) {
+      throw new RuntimeException("RSA");
+    }
+  }
+
+  public static byte[] dencryptBytes(byte[] src, Key key) {
+    try {
+      Cipher cipher = Cipher.getInstance(EncryptType.RSA.toString());
+      cipher.init(Cipher.DECRYPT_MODE, key);
+      return cipher.doFinal(src);
+    } catch (Exception e) {
+      throw new RuntimeException("RSA");
+    }
+  }
+
+  public static byte[] dencryptBytes(String src, Key key) {
+    try {
+      Cipher cipher = Cipher.getInstance(EncryptType.RSA.toString());
+      cipher.init(Cipher.DECRYPT_MODE, key);
+      byte[] input = Base64Util.decodeBase64(src);
+      return cipher.doFinal(input);
+    } catch (Exception e) {
+      throw new RuntimeException("RSA");
+    }
+  }
+
+  public static String dencryptString(byte[] src, Key key) {
+    try {
+      Cipher cipher = Cipher.getInstance(EncryptType.RSA.toString());
+      cipher.init(Cipher.DECRYPT_MODE, key);
+      return new String(cipher.doFinal(src));
+    } catch (Exception e) {
+      throw new RuntimeException("RSA");
+    }
+  }
+
+  public static String dencryptString(String src, Key key) {
+    try {
+      Cipher cipher = Cipher.getInstance(EncryptType.RSA.toString());
+      cipher.init(Cipher.DECRYPT_MODE, key);
+      byte[] input = Base64Util.decodeBase64(src);
+      return new String(cipher.doFinal(input));
+    } catch (Exception e) {
+      throw new RuntimeException("RSA");
+    }
+  }
+}
