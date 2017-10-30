@@ -1,0 +1,122 @@
+
+
+public class EncryptUtil {
+  private EncryptUtil() {
+
+  }
+
+  public static SecretKey getKeyDES() {
+
+    byte[] key;
+    try {
+      key = HexUtil.decodeHex(new char[]{'1', 'a', '1', '4', '5', 'f', '7', 'e', '9', 'a',
+       'b', 'c', 'd', 'e', 'f', '0'});
+    } catch (DecoderException e) {
+      throw new RuntimeException("DES");
+    }
+
+    SecretKey secretKey = new SecretKeySpec(key, EncryptType.DES.toString());
+
+    return secretKey;
+  }
+
+  public static SecretKey getKeyAES() {
+    KeyGenerator keyGen;
+    try {
+      keyGen = KeyGenerator.getInstance(EncryptType.AES.toString());
+    } catch (NoSuchAlgorithmException e) {
+      throw new RuntimeException("AES");
+    }
+    keyGen.init(128);
+    return keyGen.generateKey();
+  }
+
+  public static byte[] desEncrypt(byte[] source, SecretKey key) {
+
+    try {
+      byte[] bytes;
+      Cipher cipher = Cipher.getInstance(EncryptType.DES.toString());
+      cipher.init(Cipher.ENCRYPT_MODE, key);
+      bytes = cipher.doFinal(source);
+      return bytes;
+    } catch (Exception e) {
+      throw new RuntimeException("DES");
+    }
+  }
+
+  public static String desEncrypt(String input, SecretKey key) {
+    byte[] res;
+    try {
+      res = desEncrypt(input.getBytes("utf8"), key);
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException("encode");
+    }
+    return Base64Util.encodeBase64String(res);
+  }
+
+  public static byte[] desDecrypt(byte[] source, SecretKey key) {
+
+    try {
+      Cipher cipher = Cipher.getInstance(EncryptType.DES.toString());
+      cipher.init(Cipher.DECRYPT_MODE, key);
+      byte[] bytes;
+      bytes = cipher.doFinal(source);
+      return bytes;
+    } catch (Exception e) {
+      throw new RuntimeException("DES");
+    }
+  }
+
+
+  public static String desDecrypt(String input, SecretKey key) {
+    byte[] temp = Base64Util.decodeBase64(input);
+    byte[] res = desDecrypt(temp, key);
+    return new String(res);
+  }
+
+
+  public static byte[] aesEncrypt(byte[] input, SecretKey key) {
+    try {
+      Cipher cipher = Cipher.getInstance(EncryptType.AES.toString());
+      cipher.init(Cipher.ENCRYPT_MODE, key);
+      byte[] bytes;
+      bytes = cipher.doFinal(input);
+      return bytes;
+    } catch (Exception e) {
+      throw new RuntimeException("AES");
+    }
+  }
+
+ 
+  public static String aesEncrypt(String input, SecretKey key) {
+    byte[] res;
+    try {
+      res = aesEncrypt(input.getBytes("utf8"), key);
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException("encode");
+    }
+
+    return Base64Util.encodeBase64String(res);
+  }
+
+  
+  public static byte[] aesDecrypt(byte[] input, SecretKey key) {
+    try {
+      Cipher cipher = Cipher.getInstance(EncryptType.AES.toString());
+      cipher.init(Cipher.DECRYPT_MODE, key);
+      byte[] bytes;
+      bytes = cipher.doFinal(input);
+      return bytes;
+    } catch (Exception e) {
+      throw new RuntimeException("AES");
+    }
+  }
+
+
+  public static String aesDecrypt(String input, SecretKey key) {
+    byte[] temp = Base64Util.decodeBase64(input);
+    byte[] res = aesDecrypt(temp, key);
+    return new String(res);
+  }
+
+}
